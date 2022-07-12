@@ -26,7 +26,7 @@ exports.addToCart = async (req, res, next) => {
           {
             productId,
             productName,
-            productQuantity,
+            quantity: productQuantity,
             price,
           },
         ],
@@ -36,43 +36,31 @@ exports.addToCart = async (req, res, next) => {
       res.json(newCart);
     }
 
-    let mappedUsercart = userCart.products.map(p => p.productId);
-    // if (mappedUsercart.indexOf(productId) != -1) {
-    //   throw createError(400, "You already added this Product");
+    let existingProduct = userCart.products.filter(product => {
+      return product.productId == productId;
+    });
 
-    // }
-    const ind = mappedUsercart.includes(productId);
+    if (existingProduct.length >= 1) {
+      throw createError(409, "You already added this Product To Cart");
+    }
 
-    // userCart.products.push({
-    //   productId,
-    //   productName,
-    //   productQuantity,
-    //   price,
-    // });
-    //await userCart.save();
-    res.json({ mappedUsercart, ind, productId });
-    //res.json(userCart.products.map(i => i.productId));
+    userCart.products.push({
+      productId,
+      productName,
+      quantity: productQuantity,
+      price,
+    });
+    await userCart.save();
+    res.json(userCart);
   } catch (error) {
     next(error);
   }
 };
+
+exports.removeFromCart = (req, res, next) => {};
 
 // const totalPrice = userCart.products.reduce(
 //   (acc, cval) => ({ price: acc.price + (cval.quantity * cval.price )}) ,
 //   { price: 0  },
 // ).price;
 //   console.log(totalPrice)
-/*
-  {
-        userId: userId,
-        $addToSet: {
-          products: {
-            productId: productId,
-            productName: productName,
-            quantity: productQuantity,
-            price: price,
-          },
-        },
-      },
-      { new: true },
-*/
