@@ -9,8 +9,6 @@ const priceFilter = async (listOfArray, searchQuery) => {
 };
 
 const productQuantityCheck = async (productQuantity, cartQuantity) => {
-  //const { quantity } = await Product.findById(productId);
-
   return parseInt(productQuantity) > parseInt(cartQuantity) ? true : false;
 };
 
