@@ -19,3 +19,14 @@ Method : POST
 BODY : {productId, ProductQuantity}
 
 ```
+
+```
+Remove product from cart
+
+http://localhost:4242/remove
+
+METHOD : POST
+
+BODY : {productId}
+
+```

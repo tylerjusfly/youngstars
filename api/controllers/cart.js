@@ -1,4 +1,4 @@
-const userId = 1;
+const userId = 4;
 const Cart = require("../models/cart");
 const Product = require("../models/product");
 const { productQuantityCheck } = require("../services/products");
@@ -57,7 +57,37 @@ exports.addToCart = async (req, res, next) => {
   }
 };
 
-exports.removeFromCart = (req, res, next) => {};
+exports.removeFromCart = async (req, res, next) => {
+  const { productId } = req.body;
+
+  try {
+    // Get users cart by its Id , check if product id exist in cart
+    const userCart = await Cart.findOne({ userId: userId });
+
+    if (!userCart) {
+      return next({ status: 404, message: "This user does not have a cart" });
+    }
+
+    let remainProduct = userCart.products.filter(product => {
+      return product.productId != productId;
+    });
+
+    // if the filter condition is not met
+    // if (remainProduct.length == 0) {
+    //   return next({ status: 404, message: "This product does not exist in cart" });
+    //   //throw createError(409, "You already added this Product To Cart");
+    // }
+
+    // if exist , add remaining products
+    userCart.products = remainProduct;
+
+    await userCart.save();
+
+    res.json(userCart);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // const totalPrice = userCart.products.reduce(
 //   (acc, cval) => ({ price: acc.price + (cval.quantity * cval.price )}) ,
